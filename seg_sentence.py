@@ -3,7 +3,7 @@ import jieba
 
 def segment(sentence):
     sentence_seged = jieba.cut(sentence.strip()) 
-    stopwords = [",","，","。","?","？","（","）","(",")","《","》","、","/","！","「","」","“","”","："]
+    stopwords = [",","，","。","?","？","（","）","(",")","《","》","、","/","！","「","」","“","”","：","<",">","－","／"]
     outstr = ''
     for word in sentence_seged:
         if word not in stopwords:

@@ -1,27 +1,9 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 from gensim.models import Word2Vec
 from gensim.models.word2vec import LineSentence
 from gensim.models import word2vec_corpusfile
+from gensim.models import KeyedVectors
 import codecs
 import os
-
-class TextCNN(nn.Module):
-    def __init__(self):
-        super(TextCNN,self).__init__()
-        kernel_size = 2
-        self.embedding=nn.Embedding(10000,300)
-        self.conv1d=nn.Conv1d(1,1,kernel_size)
-        self.pool=nn.MaxPool1d(kernel_size)
-        self.fc=nn.Linear(300,300)
-
-    def forward(self,x):
-        x=self.conv1d(x)
-        x=self.pool(x)
-        x=torch.cat(x,0)
-        return self.fc(x)
 
 class MySentences(object):
     def __init__(self, dirname):
@@ -56,17 +38,17 @@ class MySentences(object):
 # wf.close()
 
 # sentences = LineSentence('./data/wiki.zh.word.2.text')
-# model  = Word2Vec(sentences,size = 800,hs = 1,window =3)
-# model.save('./data/wiki.zh.800.model')
+# model  = Word2Vec(sentences,size = 400,hs = 1,window =3)
+# model.save('./data/wiki.zh.400.model')
 # print(model.most_similar('科学家'))
 # i=0
-model2 = Word2Vec.load('./data/wiki.zh.800.model')
+model2 = Word2Vec.load('./data/wiki.zh.400.model')
 print('load finish')
 # model2.build_vocab(corpus_file='./data/min.test.txt', update=True)
 # print(model2.corpus_total_words)
-model2.build_vocab(corpus_file='./data/wiki.zh.seg.txt', update=True)
+model2.build_vocab(corpus_file='./data/zh.seg.txt', update=True)
 print('build finish')
-model2.train(corpus_file='./data/wiki.zh.seg.txt',total_examples=model2.corpus_count,epochs=model2.iter,total_words=model2.corpus_total_words)
+model2.train(corpus_file='./data/zh.seg.txt',total_examples=model2.corpus_count,epochs=model2.iter,total_words=model2.corpus_total_words)
 # model2.train(corpus_file='./data/min.test.txt',total_examples=model2.corpus_count,epochs=model2.iter,total_words=model2.corpus_total_words)
 print('train finish')
 # wiki = open('./data/wiki.zh.seg.txt','r',encoding='utf8')
@@ -80,5 +62,5 @@ print('train finish')
 #     if i%1000==0:
 #         print('sentence '+str(i))
 # wiki.close()
-model2.save('./data/wiki.g2.800.model')
+model2.save('./data/g2.400.model')
 print(model2.most_similar('科学家'))
