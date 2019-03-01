@@ -8,6 +8,42 @@ import torch
 import torch.nn as nn
 import numpy
 
+def generate_target_file():
+    primitive_corpus = open('./data/web_text_zh_train.json', 'r',encoding='utf8')
+    labels = open('./data/labels.txt','w',encoding='utf8')
+    line = primitive_corpus.readline()
+    target={}
+    label=0
+    while line:
+        jstr = json.loads(line)
+        k = jstr['topic']
+        # keys = seg_sentence.segment(key,type="arr")
+        # k = keys[0]
+        if k not in target:
+            target[k]=label
+            labels.write(str(label)+" "+k+"\n")
+            label += 1
+            # print(k+","+str(label))
+        line = primitive_corpus.readline()
+    primitive_corpus.close()
+    labels.close()
+    return target
+
+def generate_target():
+    primitive_corpus = open('./data/web_text_zh_train.json', 'r',encoding='utf8')
+    line = primitive_corpus.readline()
+    target={}
+    label=0
+    while line:
+        jstr = json.loads(line)
+        k = jstr['topic']
+        if k not in target:
+            target[k]=label
+            label += 1
+        line = primitive_corpus.readline()
+    primitive_corpus.close()
+    return target
+
 # return y,x
 def get_trainset_data():
     primitive_corpus = open('./data/web_text_zh_train.json', 'r',encoding='utf8')
@@ -24,38 +60,30 @@ def get_trainset_data():
 #     return arr
 
 # return train_x,train_y
-def generate_trainset(batch_size,sentence_len,embedding,word2idx):
-    train_x=[]
-    train_y=[]
-    print(len(word2idx))
+def generate_trainset(batch_size,sentence_len,embedding,word2idx,targets):
+    train_x=torch.zeros([batch_size,400,sentence_len],dtype=torch.float32)
+    target_len = len(targets)
+    print('target_len:' + str(target_len))
+    train_y=torch.zeros([batch_size,1,target_len],dtype=torch.long)
+    group_idx=0
     for (y,x) in get_trainset_data():
-        array_y = seg_sentence.segment(y,type="arr")
         array_x = seg_sentence.segment(x,type="arr")
+        tensor_x = torch.zeros([sentence_len,400],dtype=torch.float32)
+        # generate tensor X
         for idx in range(0,sentence_len):
-            if idx >=len(array_y):
-                vec_y = numpy.zeros(400)
-                train_y.append(vec_y)
-            else:
-                word = array_y[idx]
-                if word in word2idx:
-                    vec_y = embedding.weight[word2idx[word]]
-                    train_y.append(vec_y)
-                else:
-                    vec_y = numpy.zeros(400)
-                    train_y.append(vec_y)
-            if idx >=len(array_x):
-                vec_x = numpy.zeros(400)
-                train_x.append(vec_x)
-            else:
+            if idx <len(array_x):
                 word = array_x[idx]
                 if word in word2idx:
                     vec_x = embedding.weight[word2idx[word]]
-                    train_x.append(vec_x)
-                else:
-                    vec_x = numpy.zeros(400)
-                    train_x.append(vec_x)
-        batch_size-=1
-        if batch_size<0:
+                    tensor_x[idx]=vec_x
+        # generate label
+        tensor_y = torch.zeros([target_len,1],dtype=torch.long)
+        tensor_y[targets[y]]=1
+
+        train_x[group_idx]=torch.t(tensor_x)
+        train_y[group_idx]=torch.t(tensor_y)
+        group_idx+=1
+        if group_idx>=batch_size:
             yield train_x,train_y
             train_x.clear()
             train_y.clear()
