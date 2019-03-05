@@ -85,5 +85,6 @@ def generate_trainset(batch_size,sentence_len,embedding,word2idx,targets):
         group_idx+=1
         if group_idx>=batch_size:
             yield train_x,train_y
-            train_x.clear()
-            train_y.clear()
+            train_x=torch.zeros([batch_size,400,sentence_len],dtype=torch.float32)
+            train_y=torch.zeros([batch_size,1,target_len],dtype=torch.long)
+            group_idx = 0
