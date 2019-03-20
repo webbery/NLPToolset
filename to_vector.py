@@ -1,9 +1,8 @@
 from gensim.models import Word2Vec
 from gensim.models.word2vec import LineSentence
-from gensim.models import word2vec_corpusfile
 from gensim.models import KeyedVectors
 import codecs
-import os
+import os, sys
 
 class MySentences(object):
     def __init__(self, dirname):
@@ -14,15 +13,11 @@ class MySentences(object):
             for line in open(os.path.join(self.dirname, fname)):
                 yield line.split()
                 
-# tcnn=TextCNN()
-# weight = torch.FloatTensor([[1, 2.3, 3], [4, 5.1, 6.3]])
-# embedding = nn.Embedding.from_pretrained(weight)
-# input = torch.LongTensor([1])
-# val = embedding(input)
-# print(val)
+words_file = sys.argv[1]
+model_file = sys.argv[2]
 
 # wf = codecs.open('./data/wiki.zh.word.2.text','w','utf-8')
-# f = codecs.open('./data/wiki.zh.word.text', 'r','utf-8')
+# f = codecs.open(words_file, 'r','utf-8')
 # line = f.readline()
 # lastline=""
 # while line:
@@ -37,20 +32,20 @@ class MySentences(object):
 # f.close()
 # wf.close()
 
-# sentences = LineSentence('./data/wiki.zh.word.2.text')
-# model  = Word2Vec(sentences,size = 400,hs = 1,window =3)
-# model.save('./data/wiki.zh.400.model')
-# print(model.most_similar('科学家'))
+sentences = LineSentence(words_file)
+model  = Word2Vec(sentences,size = 150,hs = 1,window =5)
+model.save(model_file)
+print(model.most_similar('天才'))
 # i=0
-model2 = Word2Vec.load('./data/wiki.zh.400.model')
-print('load finish')
+# model2 = Word2Vec.load('./data/wiki.zh.400.model')
+# print('load finish')
 # model2.build_vocab(corpus_file='./data/min.test.txt', update=True)
 # print(model2.corpus_total_words)
-model2.build_vocab(corpus_file='./data/zh.seg.txt', update=True)
-print('build finish')
-model2.train(corpus_file='./data/zh.seg.txt',total_examples=model2.corpus_count,epochs=model2.iter,total_words=model2.corpus_total_words)
+# model2.build_vocab(corpus_file='./data/zh.seg.txt', update=True)
+# print('build finish')
+# model2.train(corpus_file='./data/zh.seg.txt',total_examples=model2.corpus_count,epochs=model2.iter,total_words=model2.corpus_total_words)
 # model2.train(corpus_file='./data/min.test.txt',total_examples=model2.corpus_count,epochs=model2.iter,total_words=model2.corpus_total_words)
-print('train finish')
+# print('train finish')
 # wiki = open('./data/wiki.zh.seg.txt','r',encoding='utf8')
 # line = wiki.readline()
 # while line:
@@ -62,5 +57,5 @@ print('train finish')
 #     if i%1000==0:
 #         print('sentence '+str(i))
 # wiki.close()
-model2.save('./data/g2.400.model')
-print(model2.most_similar('科学家'))
+# model2.save('./data/g2.400.model')
+# print(model2.most_similar('科学家'))
