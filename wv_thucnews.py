@@ -14,14 +14,14 @@ def getFilePathList(rootDir):
 
 filePath_list = getFilePathList('../data/THUCNews')
 # 标签
-# label_list = []
-# for filePath in filePath_list:
-#     label = filePath.split('\\')[1]
-#     label_list.append(label)
+label_list = []
+for filePath in filePath_list:
+    label = filePath.split('\\')[1]
+    label_list.append(label)
 
-# #保存标签
-# with open('../data/label_list.pkl', 'wb') as file:
-#     pickle.dump(label_list, file)
+#保存标签
+with open('../data/label_list.pkl', 'wb') as file:
+    pickle.dump(label_list, file)
 
 #保存文本内容
 content_list = []
@@ -36,21 +36,21 @@ for filePath in filePath_list:
 with open('../data/content_list.pkl', 'wb') as file:
     pickle.dump(content_list, file)
 
-# gensim_out = open('../data/zh.seg.txt','w',encoding='utf8')
+gensim_out = open('../data/zh.seg.txt','w',encoding='utf8')
 
-# def process(corpus):
-#     line = corpus.readline()
-#     while line:
-#         sent=''
-#         for word in jieba.cut(seg_sentence.segment(line)):
-#             sent+=word
-#         sent += '\n'
-#         gensim_out.write(sent)
-#         line = corpus.readline()
+def process(corpus):
+    line = corpus.readline()
+    while line:
+        sent=''
+        for word in jieba.cut(seg_sentence.segment(line)):
+            sent+=word
+        sent += '\n'
+        gensim_out.write(sent)
+        line = corpus.readline()
 
 #循环处理每个文本,获取分词
-# for filePath in filePath_list:
-#     primitive_corpus = open(filePath, 'r',encoding='utf8')
-#     process(primitive_corpus)
+for filePath in filePath_list:
+    primitive_corpus = open(filePath, 'r',encoding='utf8')
+    process(primitive_corpus)
 
-# gensim_out.close()
+gensim_out.close()
