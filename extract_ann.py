@@ -7,6 +7,7 @@ import seg_sentence
 import torch
 import torch.nn as nn
 import numpy
+import matplotlib.pyplot as plt
 
 def generate_target_file():
     primitive_corpus = open('./data/web_text_zh_train.json', 'r',encoding='utf8')
@@ -59,6 +60,23 @@ def get_trainset_data():
 #     arr.append(vec)
 #     return arr
 
+def show_data_destribute():
+    # target_len = len(targets)
+    sentence_length=[]
+    l_x=[]
+    idx = 0
+    for (y,x) in get_trainset_data():
+        array_x = seg_sentence.segment(x,type="arr")
+        sentence_length.append(len(array_x))
+        idx+=1
+        l_x.append(idx)
+        if idx>10000:
+            break
+    # plt.hist(sentence_length)
+    plt.plot(l_x,sentence_length,'+')
+    plt.show()
+    plt.savefig("dist.png")
+
 # return train_x,train_y
 def generate_trainset(batch_size,sentence_len,embedding,word2idx,targets):
     train_x=torch.zeros([batch_size,400,sentence_len],dtype=torch.float32)
@@ -88,3 +106,12 @@ def generate_trainset(batch_size,sentence_len,embedding,word2idx,targets):
             train_x=torch.zeros([batch_size,400,sentence_len],dtype=torch.float32)
             train_y=torch.zeros([batch_size,1,target_len],dtype=torch.long)
             group_idx = 0
+
+def get_validset_data():
+    primitive_corpus = open('./data/web_text_zh_valid.json', 'r',encoding='utf8')
+    line = primitive_corpus.readline()
+    while line:
+        jstr = json.loads(line)
+        yield jstr['topic'],jstr['content']
+        line = primitive_corpus.readline()
+    primitive_corpus.close()
