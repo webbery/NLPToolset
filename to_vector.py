@@ -15,6 +15,10 @@ class MySentences(object):
                 
 words_file = sys.argv[1]
 model_file = sys.argv[2]
+mode_append = False
+if len(sys.argv)>3:
+    if sys.argv[3]=='-a':
+        mode_append = True
 
 # wf = codecs.open('./data/wiki.zh.word.2.text','w','utf-8')
 # f = codecs.open(words_file, 'r','utf-8')
@@ -32,20 +36,22 @@ model_file = sys.argv[2]
 # f.close()
 # wf.close()
 
-sentences = LineSentence(words_file)
-model  = Word2Vec(sentences,size = 150,hs = 1,window =5)
-model.save(model_file)
-print(model.most_similar('天才'))
+if mode_append==False:
+    sentences = LineSentence(words_file)
+    model  = Word2Vec(sentences,size = 150,hs = 1,window =5)
+    model.save(model_file)
+    print(model.most_similar('天才'))
+else:
 # i=0
-# model2 = Word2Vec.load('./data/wiki.zh.400.model')
-# print('load finish')
-# model2.build_vocab(corpus_file='./data/min.test.txt', update=True)
+    model = Word2Vec.load(model_file)
+    print('load finish')
+    model.build_vocab(corpus_file=words_file, update=True)
 # print(model2.corpus_total_words)
 # model2.build_vocab(corpus_file='./data/zh.seg.txt', update=True)
-# print('build finish')
-# model2.train(corpus_file='./data/zh.seg.txt',total_examples=model2.corpus_count,epochs=model2.iter,total_words=model2.corpus_total_words)
+    print('build finish')
+    model.train(corpus_file=words_file,total_examples=model.corpus_count,epochs=model.iter,total_words=model.corpus_total_words)
 # model2.train(corpus_file='./data/min.test.txt',total_examples=model2.corpus_count,epochs=model2.iter,total_words=model2.corpus_total_words)
-# print('train finish')
+    print('train finish')
 # wiki = open('./data/wiki.zh.seg.txt','r',encoding='utf8')
 # line = wiki.readline()
 # while line:
@@ -57,5 +63,5 @@ print(model.most_similar('天才'))
 #     if i%1000==0:
 #         print('sentence '+str(i))
 # wiki.close()
-# model2.save('./data/g2.400.model')
-# print(model2.most_similar('科学家'))
+    model.save(model_file+'.3')
+    print(model.most_similar('天才'))
